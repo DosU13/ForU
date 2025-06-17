@@ -62,6 +62,20 @@
         <h1>Forever & Always</h1>
         <p>Like golden particles dancing in the warm evening light, our love floats gently through time, creating magical moments that shimmer and glow in the depths of our hearts.</p>
         <p>Touch anywhere to see hearts flutter...</p>
+<button id="startButton" style="
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: #d7c779;
+    color: #635100;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 5;
+    display: none;
+">
+  💖 Tap to Start the Magic 💖
+</button>
     </div>
 
   <audio id="bg-music" autoplay loop>
@@ -70,21 +84,22 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-    window.romanticCanvas = new RomanticCanvas();
-
     const audio = document.getElementById('bg-music');
+    const startButton = document.getElementById('startButton');
 
-    // Try to play immediately
-    audio.play().catch(() => {
-        // If autoplay fails, wait for user interaction
-        const unlockAudio = () => {
+    audio.play().then(() => {
+        // Autoplay worked
+        startButton.style.display = 'none';
+    }).catch(() => {
+        // Autoplay blocked – show manual start button
+        startButton.style.display = 'inline-block';
+        startButton.addEventListener('click', () => {
             audio.play();
-            document.removeEventListener('click', unlockAudio);
-            document.removeEventListener('touchstart', unlockAudio);
-        };
-        document.addEventListener('click', unlockAudio);
-        document.addEventListener('touchstart', unlockAudio);
+            startButton.style.display = 'none';
+        });
     });
+
+    window.romanticCanvas = new RomanticCanvas();
 });
 
         class RomanticCanvas {
