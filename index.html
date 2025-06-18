@@ -12,6 +12,7 @@
       overflow: hidden;
       font-family: Georgia, serif;
       height: 100%;
+overflow-x: hidden;
     }
 
     #romanticCanvas {
@@ -39,16 +40,20 @@
     }
 
     .floating-text {
-      position: absolute;
-      font-size: 1.2rem;
-      color: #ffebc2;
-      opacity: 0.9;
-      pointer-events: none;
-      white-space: nowrap;
-      animation: floatUp 6s linear forwards;
-      z-index: 3;
-      text-shadow: 0 0 10px rgba(255, 238, 170, 0.7);
-    }
+  position: absolute;
+  max-width: 80vw; /* wrap long text */
+  font-size: 1.2rem;
+  color: #ffebc2;
+  opacity: 0.9;
+  pointer-events: none;
+  white-space: normal; /* allow wrap */
+  animation: floatUp 6s linear forwards;
+  z-index: 3;
+  text-shadow: 0 0 10px rgba(255, 238, 170, 0.7);
+  transform: translateX(-50%);
+  left: 50%;
+}
+
 
     @keyframes floatUp {
       0% { transform: translateY(0); opacity: 1; }
