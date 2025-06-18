@@ -1,400 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Romantic Canvas Animation</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #635100;
-            color: #d7c779;
-            font-family: Georgia, serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-        
-        #romanticCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .content {
-            position: relative;
-            z-index: 2;
-            padding: 40px 20px;
-            text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 20px rgba(215, 199, 121, 0.3);
-        }
-        
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            max-width: 600px;
-            margin: 1rem auto;
-            opacity: 0.9;
-        }
-        
-        @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            p { font-size: 1rem; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Romantic Floating Words</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #635100;
+      overflow: hidden;
+      font-family: Georgia, serif;
+      height: 100%;
+    }
+
+    #romanticCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #startButton {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 16px 32px;
+      font-size: 1.2rem;
+      background-color: #d7c779;
+      color: #635100;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 5;
+      box-shadow: 0 0 20px rgba(215, 199, 121, 0.5);
+    }
+
+    .floating-text {
+      position: absolute;
+      font-size: 1.2rem;
+      color: #ffebc2;
+      opacity: 0.9;
+      pointer-events: none;
+      white-space: nowrap;
+      animation: floatUp 6s linear forwards;
+      z-index: 3;
+      text-shadow: 0 0 10px rgba(255, 238, 170, 0.7);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-200px); opacity: 0; }
+    }
+  </style>
 </head>
 <body>
-    <canvas id="romanticCanvas"></canvas>
-    
-    <div class="content">
-        <h1>Forever & Always</h1>
-        <p>Like golden particles dancing in the warm evening light, our love floats gently through time, creating magical moments that shimmer and glow in the depths of our hearts.</p>
-        <p>Touch anywhere to see hearts flutter...</p>
-<button id="startButton" style="
-    margin-top: 20px;
-    padding: 12px 24px;
-    font-size: 1rem;
-    background-color: #d7c779;
-    color: #635100;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    z-index: 5;
-    display: none;
-">
-  💖 Tap to Start the Magic 💖
-</button>
-    </div>
-
-  <audio id="bg-music" autoplay loop>
+  <canvas id="romanticCanvas"></canvas>
+  <button id="startButton">💖 Tap to Start the Magic 💖</button>
+  <audio id="bg-music" loop>
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const audio = document.getElementById('bg-music');
-    const startButton = document.getElementById('startButton');
+  <script>
+    const messages = [
+      "The first time I saw you, time stopped.",
+      "Your smile is the warmth in my heart.",
+      "Forever feels short with you.",
+      "You are my favorite memory.",
+      "In your eyes, I find home.",
+      "Every heartbeat whispers your name."
+    ];
 
-    audio.play().then(() => {
-        // Autoplay worked
-        startButton.style.display = 'none';
-    }).catch(() => {
-        // Autoplay blocked – show manual start button
-        startButton.style.display = 'inline-block';
-        startButton.addEventListener('click', () => {
-            audio.play();
-            startButton.style.display = 'none';
-        });
+    const startButton = document.getElementById('startButton');
+    const audio = document.getElementById('bg-music');
+
+    function showFloatingText(text) {
+      const el = document.createElement('div');
+      el.className = 'floating-text';
+      el.textContent = text;
+
+      const x = Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1;
+      const y = Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+
+      document.body.appendChild(el);
+
+      setTimeout(() => {
+        document.body.removeChild(el);
+      }, 6000);
+    }
+
+    function launchFloatingTexts() {
+      setInterval(() => {
+        const msg = messages[Math.floor(Math.random() * messages.length)];
+        showFloatingText(msg);
+      }, 3000);
+    }
+
+    startButton.addEventListener('click', () => {
+      startButton.style.display = 'none';
+      audio.play();
+      new RomanticCanvas();
+      launchFloatingTexts();
     });
 
-    window.romanticCanvas = new RomanticCanvas();
-});
+    class RomanticCanvas {
+      constructor() {
+        this.canvas = document.getElementById('romanticCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.glares = [];
+        this.hearts = [];
+        this.animationId = null;
 
-        class RomanticCanvas {
-            constructor() {
-                this.canvas = document.getElementById('romanticCanvas');
-                this.ctx = this.canvas.getContext('2d');
-                this.particles = [];
-                this.glares = [];
-                this.hearts = [];
-                this.animationId = null;
-                
-                // Colors matching your theme
-                this.colors = {
-                    particle: 'rgba(215, 199, 121, ',
-                    glare: 'rgba(255, 223, 127, ',
-                    heart: 'rgba(255, 182, 193, '
-                };
-                
-                this.init();
-                this.bindEvents();
-                this.animate();
-            }
-            
-            init() {
-                this.resize();
-                this.createInitialParticles();
-            }
-            
-            resize() {
-                this.canvas.width = window.innerWidth;
-                this.canvas.height = window.innerHeight;
-                this.width = this.canvas.width;
-                this.height = this.canvas.height;
-            }
-            
-            bindEvents() {
-                window.addEventListener('resize', () => this.resize());
-                
-                // Touch and click events for heart flickers
-                const addHeartFlicker = (e) => {
-                    const rect = this.canvas.getBoundingClientRect();
-                    const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                    const y = (e.clientY || e.touches[0].clientY) - rect.top;
-                    this.createHeartFlicker(x, y);
-                };
-                
-                document.addEventListener('touchstart', addHeartFlicker);
-                document.addEventListener('click', addHeartFlicker);
-            }
-            
-            createInitialParticles() {
-                const particleCount = Math.min(80, Math.floor(this.width * this.height / 8000));
-                
-                for (let i = 0; i < particleCount; i++) {
-                    this.particles.push(this.createParticle());
-                }
-            }
-            
-            createParticle() {
-                return {
-                    x: Math.random() * this.width,
-                    y: Math.random() * this.height,
-                    size: Math.random() * 3 + 1,
-                    speedX: (Math.random() - 0.5) * 0.5,
-                    speedY: -Math.random() * 0.8 - 0.2,
-                    opacity: Math.random() * 0.6 + 0.2,
-                    life: 1,
-                    maxOpacity: Math.random() * 0.6 + 0.2
-                };
-            }
-            
-            createGlare() {
-                if (Math.random() < 0.003) { // Low probability for occasional glares
-                    this.glares.push({
-                        x: Math.random() * this.width,
-                        y: Math.random() * this.height,
-                        size: Math.random() * 40 + 20,
-                        opacity: 0,
-                        life: 1,
-                        phase: 0,
-                        pulseSpeed: Math.random() * 0.02 + 0.01
-                    });
-                }
-            }
-            
-            createHeartFlicker(x, y) {
-                // Create multiple hearts for a flutter effect
-                for (let i = 0; i < 5; i++) {
-                    this.hearts.push({
-                        x: x + (Math.random() - 0.5) * 40,
-                        y: y + (Math.random() - 0.5) * 40,
-                        size: Math.random() * 15 + 10,
-                        speedX: (Math.random() - 0.5) * 2,
-                        speedY: -Math.random() * 3 - 1,
-                        opacity: 1,
-                        life: 1,
-                        rotation: Math.random() * Math.PI * 2
-                    });
-                }
-            }
-            
-            updateParticles() {
-                this.particles.forEach((particle, index) => {
-                    // Update position
-                    particle.x += particle.speedX;
-                    particle.y += particle.speedY;
-                    
-                    // Gentle floating motion
-                    particle.x += Math.sin(Date.now() * 0.001 + index) * 0.1;
-                    
-                    // Reset particle when it goes off screen
-                    if (particle.y < -10) {
-                        particle.y = this.height + 10;
-                        particle.x = Math.random() * this.width;
-                    }
-                    
-                    if (particle.x < -10) particle.x = this.width + 10;
-                    if (particle.x > this.width + 10) particle.x = -10;
-                    
-                    // Subtle opacity variation
-                    particle.opacity = particle.maxOpacity * (0.7 + 0.3 * Math.sin(Date.now() * 0.002 + index));
-                });
-            }
-            
-            updateGlares() {
-                this.glares.forEach((glare, index) => {
-                    glare.phase += glare.pulseSpeed;
-                    glare.life -= 0.003;
-                    
-                    // Pulsing opacity effect
-                    if (glare.life > 0.7) {
-                        glare.opacity = (1 - glare.life) * 3.33; // Fade in
-                    } else if (glare.life > 0.3) {
-                        glare.opacity = 0.3 + 0.2 * Math.sin(glare.phase * Math.PI); // Pulse
-                    } else {
-                        glare.opacity = glare.life * 1.67; // Fade out
-                    }
-                    
-                    if (glare.life <= 0) {
-                        this.glares.splice(index, 1);
-                    }
-                });
-            }
-            
-            updateHearts() {
-                this.hearts.forEach((heart, index) => {
-                    heart.x += heart.speedX;
-                    heart.y += heart.speedY;
-                    heart.speedY += 0.1; // Gravity
-                    heart.rotation += 0.05;
-                    heart.life -= 0.02;
-                    heart.opacity = heart.life;
-                    
-                    if (heart.life <= 0) {
-                        this.hearts.splice(index, 1);
-                    }
-                });
-            }
-            
-            drawParticle(particle) {
-                this.ctx.save();
-                this.ctx.globalAlpha = particle.opacity;
-                this.ctx.fillStyle = this.colors.particle + particle.opacity + ')';
-                this.ctx.shadowBlur = 8;
-                this.ctx.shadowColor = this.colors.particle + '0.3)';
-                
-                this.ctx.beginPath();
-                this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                this.ctx.fill();
-                this.ctx.restore();
-            }
-            
-            drawGlare(glare) {
-                this.ctx.save();
-                this.ctx.globalAlpha = glare.opacity;
-                
-                // Create radial gradient for soft glow
-                const gradient = this.ctx.createRadialGradient(
-                    glare.x, glare.y, 0,
-                    glare.x, glare.y, glare.size
-                );
-                gradient.addColorStop(0, this.colors.glare + '0.4)');
-                gradient.addColorStop(0.4, this.colors.glare + '0.2)');
-                gradient.addColorStop(1, this.colors.glare + '0)');
-                
-                this.ctx.fillStyle = gradient;
-                this.ctx.fillRect(
-                    glare.x - glare.size,
-                    glare.y - glare.size,
-                    glare.size * 2,
-                    glare.size * 2
-                );
-                this.ctx.restore();
-            }
-            
-            drawHeart(heart) {
-                this.ctx.save();
-                this.ctx.globalAlpha = heart.opacity;
-                this.ctx.translate(heart.x, heart.y);
-                this.ctx.rotate(heart.rotation);
-                this.ctx.scale(heart.size / 20, heart.size / 20);
-                
-                this.ctx.fillStyle = this.colors.heart + heart.opacity + ')';
-                this.ctx.strokeStyle = this.colors.heart + (heart.opacity * 0.8) + ')';
-                this.ctx.lineWidth = 1;
-                this.ctx.shadowBlur = 6;
-                this.ctx.shadowColor = this.colors.heart + '0.5)';
-                
-                // Draw heart shape
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, 3);
-                this.ctx.bezierCurveTo(-10, -5, -20, 2, -10, 15);
-                this.ctx.bezierCurveTo(-5, 20, 0, 15, 0, 15);
-                this.ctx.bezierCurveTo(0, 15, 5, 20, 10, 15);
-                this.ctx.bezierCurveTo(20, 2, 10, -5, 0, 3);
-                this.ctx.fill();
-                this.ctx.stroke();
-                
-                this.ctx.restore();
-            }
-            
-            animate() {
-                this.ctx.clearRect(0, 0, this.width, this.height);
-                
-                // Update all elements
-                this.updateParticles();
-                this.updateGlares();
-                this.updateHearts();
-                
-                // Create new glares occasionally
-                this.createGlare();
-                
-                // Draw all elements
-                this.particles.forEach(particle => this.drawParticle(particle));
-                this.glares.forEach(glare => this.drawGlare(glare));
-                this.hearts.forEach(heart => this.drawHeart(heart));
-                
-                this.animationId = requestAnimationFrame(() => this.animate());
-            }
-            
-            // Method to add custom visual elements
-            addCustomEffect(type, config = {}) {
-                switch(type) {
-                    case 'sparkTrail':
-                        this.createSparkTrail(config.x || 0, config.y || 0, config.count || 10);
-                        break;
-                    case 'floatingHeart':
-                        this.createHeartFlicker(config.x || this.width/2, config.y || this.height/2);
-                        break;
-                    case 'glareExplosion':
-                        for(let i = 0; i < (config.count || 3); i++) {
-                            this.glares.push({
-                                x: config.x + (Math.random() - 0.5) * 100,
-                                y: config.y + (Math.random() - 0.5) * 100,
-                                size: Math.random() * 60 + 30,
-                                opacity: 0,
-                                life: 1,
-                                phase: 0,
-                                pulseSpeed: Math.random() * 0.03 + 0.02
-                            });
-                        }
-                        break;
-                }
-            }
-            
-            createSparkTrail(startX, startY, count) {
-                for(let i = 0; i < count; i++) {
-                    this.particles.push({
-                        x: startX + (Math.random() - 0.5) * 20,
-                        y: startY + (Math.random() - 0.5) * 20,
-                        size: Math.random() * 2 + 0.5,
-                        speedX: (Math.random() - 0.5) * 3,
-                        speedY: (Math.random() - 0.5) * 3,
-                        opacity: 1,
-                        life: 1,
-                        maxOpacity: 1
-                    });
-                }
-            }
-            
-            destroy() {
-                if (this.animationId) {
-                    cancelAnimationFrame(this.animationId);
-                }
-            }
+        this.colors = {
+          particle: 'rgba(215, 199, 121, ',
+          glare: 'rgba(255, 223, 127, ',
+          heart: 'rgba(255, 182, 193, '
+        };
+
+        this.init();
+        this.bindEvents();
+        this.animate();
+      }
+
+      init() {
+        this.resize();
+        this.createInitialParticles();
+      }
+
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+      }
+
+      bindEvents() {
+        window.addEventListener('resize', () => this.resize());
+
+        const addHeartFlicker = (e) => {
+          const rect = this.canvas.getBoundingClientRect();
+          const x = (e.clientX || e.touches[0].clientX) - rect.left;
+          const y = (e.clientY || e.touches[0].clientY) - rect.top;
+          this.createHeartFlicker(x, y);
+        };
+
+        document.addEventListener('touchstart', addHeartFlicker);
+        document.addEventListener('click', addHeartFlicker);
+      }
+
+      createInitialParticles() {
+        const particleCount = Math.min(80, Math.floor(this.width * this.height / 8000));
+        for (let i = 0; i < particleCount; i++) {
+          this.particles.push(this.createParticle());
         }
-        
-        // Initialize the romantic canvas when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            window.romanticCanvas = new RomanticCanvas();
+      }
+
+      createParticle() {
+        return {
+          x: Math.random() * this.width,
+          y: Math.random() * this.height,
+          size: Math.random() * 3 + 1,
+          speedX: (Math.random() - 0.5) * 0.5,
+          speedY: -Math.random() * 0.8 - 0.2,
+          opacity: Math.random() * 0.6 + 0.2,
+          life: 1,
+          maxOpacity: Math.random() * 0.6 + 0.2
+        };
+      }
+
+      createGlare() {
+        if (Math.random() < 0.003) {
+          this.glares.push({
+            x: Math.random() * this.width,
+            y: Math.random() * this.height,
+            size: Math.random() * 40 + 20,
+            opacity: 0,
+            life: 1,
+            phase: 0,
+            pulseSpeed: Math.random() * 0.02 + 0.01
+          });
+        }
+      }
+
+      createHeartFlicker(x, y) {
+        for (let i = 0; i < 5; i++) {
+          this.hearts.push({
+            x: x + (Math.random() - 0.5) * 40,
+            y: y + (Math.random() - 0.5) * 40,
+            size: Math.random() * 15 + 10,
+            speedX: (Math.random() - 0.5) * 2,
+            speedY: -Math.random() * 3 - 1,
+            opacity: 1,
+            life: 1,
+            rotation: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      updateParticles() {
+        this.particles.forEach((particle, index) => {
+          particle.x += particle.speedX + Math.sin(Date.now() * 0.001 + index) * 0.1;
+          particle.y += particle.speedY;
+
+          if (particle.y < -10) {
+            particle.y = this.height + 10;
+            particle.x = Math.random() * this.width;
+          }
+
+          if (particle.x < -10) particle.x = this.width + 10;
+          if (particle.x > this.width + 10) particle.x = -10;
+
+          particle.opacity = particle.maxOpacity * (0.7 + 0.3 * Math.sin(Date.now() * 0.002 + index));
         });
-        
-        // Example of how to trigger custom effects (you can call these from other parts of your code)
-        // window.romanticCanvas.addCustomEffect('sparkTrail', {x: 400, y: 300, count: 15});
-        // window.romanticCanvas.addCustomEffect('glareExplosion', {x: 200, y: 200, count: 5});
-    </script>
+      }
+
+      updateGlares() {
+        this.glares.forEach((glare, index) => {
+          glare.phase += glare.pulseSpeed;
+          glare.life -= 0.003;
+
+          if (glare.life > 0.7) {
+            glare.opacity = (1 - glare.life) * 3.33;
+          } else if (glare.life > 0.3) {
+            glare.opacity = 0.3 + 0.2 * Math.sin(glare.phase * Math.PI);
+          } else {
+            glare.opacity = glare.life * 1.67;
+          }
+
+          if (glare.life <= 0) {
+            this.glares.splice(index, 1);
+          }
+        });
+      }
+
+      updateHearts() {
+        this.hearts.forEach((heart, index) => {
+          heart.x += heart.speedX;
+          heart.y += heart.speedY;
+          heart.speedY += 0.1;
+          heart.rotation += 0.05;
+          heart.life -= 0.02;
+          heart.opacity = heart.life;
+
+          if (heart.life <= 0) {
+            this.hearts.splice(index, 1);
+          }
+        });
+      }
+
+      drawParticle(particle) {
+        this.ctx.save();
+        this.ctx.globalAlpha = particle.opacity;
+        this.ctx.fillStyle = this.colors.particle + particle.opacity + ')';
+        this.ctx.shadowBlur = 8;
+        this.ctx.shadowColor = this.colors.particle + '0.3)';
+        this.ctx.beginPath();
+        this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.restore();
+      }
+
+      drawGlare(glare) {
+        this.ctx.save();
+        this.ctx.globalAlpha = glare.opacity;
+        const gradient = this.ctx.createRadialGradient(glare.x, glare.y, 0, glare.x, glare.y, glare.size);
+        gradient.addColorStop(0, this.colors.glare + '0.4)');
+        gradient.addColorStop(0.4, this.colors.glare + '0.2)');
+        gradient.addColorStop(1, this.colors.glare + '0)');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(glare.x - glare.size, glare.y - glare.size, glare.size * 2, glare.size * 2);
+        this.ctx.restore();
+      }
+
+      drawHeart(heart) {
+        this.ctx.save();
+        this.ctx.globalAlpha = heart.opacity;
+        this.ctx.translate(heart.x, heart.y);
+        this.ctx.rotate(heart.rotation);
+        this.ctx.scale(heart.size / 20, heart.size / 20);
+        this.ctx.fillStyle = this.colors.heart + heart.opacity + ')';
+        this.ctx.strokeStyle = this.colors.heart + (heart.opacity * 0.8) + ')';
+        this.ctx.lineWidth = 1;
+        this.ctx.shadowBlur = 6;
+        this.ctx.shadowColor = this.colors.heart + '0.5)';
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, 0);
+        this.ctx.bezierCurveTo(0, -3, -5, -10, -12, -10);
+        this.ctx.bezierCurveTo(-25, -10, -25, 10, 0, 25);
+        this.ctx.bezierCurveTo(25, 10, 25, -10, 12, -10);
+        this.ctx.bezierCurveTo(5, -10, 0, -3, 0, 0);
+        this.ctx.fill();
+        this.ctx.stroke();
+        this.ctx.restore();
+      }
+
+      animate() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.updateParticles();
+        this.updateGlares();
+        this.updateHearts();
+        this.createGlare();
+        this.particles.forEach(p => this.drawParticle(p));
+        this.glares.forEach(g => this.drawGlare(g));
+        this.hearts.forEach(h => this.drawHeart(h));
+        this.animationId = requestAnimationFrame(() => this.animate());
+      }
+    }
+  </script>
 </body>
 </html>
