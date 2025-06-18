@@ -52,31 +52,82 @@ overflow-x: hidden;
   text-shadow: 0 0 10px rgba(255, 238, 170, 0.7);
   transform: translateX(-50%);
   left: 50%;
+  text-align: center;
 }
 
 
-    @keyframes floatUp {
-      0% { transform: translateY(0); opacity: 1; }
+    @keyframes floatUp {      
+      0% { transform: translateY(0px); opacity: 0; }
+      25% { transform: translateY(-50px); opacity: 1; }
       100% { transform: translateY(-200px); opacity: 0; }
     }
   </style>
 </head>
 <body>
   <canvas id="romanticCanvas"></canvas>
-  <button id="startButton">💖 Tap to Start the Magic 💖</button>
+  <button id="startButton">💖💖💖</button>
   <audio id="bg-music" loop>
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
   <script>
     const messages = [
-      "The first time I saw you, time stopped.",
-      "Your smile is the warmth in my heart.",
-      "Forever feels short with you.",
-      "You are my favorite memory.",
-      "In your eyes, I find home.",
-      "Every heartbeat whispers your name."
-    ];
+  "🌟 Alina, the stars flicker when you smile. ✨",
+  "💭 Lost in a daydream, and you're the reason why. 🌙",
+  "💓 Your name echoes in every heartbeat, Alina. 💫",
+  "🤫 Even silence sounds like your voice. 🌌",
+  "🫧 As you dissolve into love, your ego fades… 🌊",
+  "🌸 Dwell on the beauty of life… see yourself running with the stars. 🌠",
+  "🌼 Even the flowers are dreamy, the rivers are dreamy... 🏞️",
+  "🕊️ Come with me, where dreams are born… and your heart will fly. ✨",
+  "🏰 Alina, we drift like castles in the air—soft, timeless. ☁️",
+  "👁️ In your eyes, Alina, time dances in gold. 💛",
+  "🌀 All that we see or seem is but a dream within a dream. 🌙",
+  "🌈 We know it’s all just daydreaming… but sometimes it’s real. 🌠",
+  "💋 Each 'Alina' on my lips dissolves into a daydream. 🫧",
+  "🎶 Your laughter echoes like stardust on quiet nights. 🌌",
+  "💫 As petals of light on water, your soul shimmers. 🌊",
+  "🎩 I like nonsense; it wakes the brain cells… 🧠✨",
+  "🌙 Every breath with you feels like moonlight’s first kiss. 💞",
+  "🖤 The shadows know your name, Alina, and tremble softly. 🌘",
+  "🧵 In my dreams you are a tapestry of gold and hope. ✨",
+  "🔊 Alina, you’re the gentle hum behind my every heartbeat. 💗",
+  "💭 Heart of mine, why art thou dreaming… 🌌",
+  "🌠 The stars which flickered as you passed 🌟",
+  "🌙 Who knows where the magic disappears 🪄",
+  "❓ It's a mystery 🌫️",
+  "🌊 dissolved in a daydream 💫",
+  "🌌 Swallowed by the night 🌒",
+  "🧠 I know the feeling 💭",
+  "💫 Together we float—two stardust souls colliding softly. 🌌",
+  "🪶 Even gravity releases me when I whisper your name. 🕊️",
+  "🖼️ You are my favorite memory. 💖",
+  "⏳ Forever feels short with you. ❤️",
+  "⏱️ The first time I saw you, time stopped. 🌟",
+  "😊 Your smile is the warmth in my heart. 🔥",
+  "💓 Every heartbeat whispers your name. 🔊",
+  "🏡 In your eyes, I find home. 🥰",
+  "🌙 You are the dream I never want to wake from. 💭",
+  "🌌 When you look at me, galaxies collide. 💥",
+  "📜 Alina, you’re a poem written in stars. ✨",
+  "💫 Dreams make sense when you're in them. 🌙",
+  "🌠 You feel like something I dreamed into life. 💕",
+  "🌟 I never believed in magic until you touched my soul. 🪄",
+  "🎵 Your soul hums in the quiet corners of my heart. 🎶",
+  "🫠 Time melts when you’re near. ⌛",
+  "⏸️ You are the pause between two beautiful heartbeats. ❤️",
+  "🌕 The moon envies the glow in your eyes, Alina. ✨",
+  "🔐 Each second with you feels like a secret forever. 💌",
+  "🌠 The stars which flickered as you passed 🌟",
+  "🌙 Who knows where the magic disappears 🪄",
+  "❓ It's a mystery 🌫️",
+  "🌊 dissolved in a daydream 💫",
+  "🌌 Swallowed by the night 🌒",
+  "🧠 I know the feeling 💭"
+];
+
+
+
 
     const startButton = document.getElementById('startButton');
     const audio = document.getElementById('bg-music');
@@ -86,7 +137,7 @@ overflow-x: hidden;
       el.className = 'floating-text';
       el.textContent = text;
 
-      const x = Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1;
+      const x = Math.random() * window.innerWidth * 0.5;
       const y = Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2;
       el.style.left = `${x}px`;
       el.style.top = `${y}px`;
@@ -102,7 +153,7 @@ overflow-x: hidden;
       setInterval(() => {
         const msg = messages[Math.floor(Math.random() * messages.length)];
         showFloatingText(msg);
-      }, 3000);
+      }, 5304);
     }
 
     startButton.addEventListener('click', () => {
